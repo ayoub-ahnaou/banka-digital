@@ -36,7 +36,7 @@ public class Account {
     protected void onCreate() {
         if (accountNumber == null) {
             accountNumber = "BAR-" +
-                    UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+                    UUID.randomUUID().toString().substring(0, 12).toUpperCase();
         }
     }
 }
