@@ -21,7 +21,6 @@ public class BankaDigitalApplication {
 
         System.setProperty("JWT_SECRET", Objects.requireNonNull(dotenv.get("JWT_SECRET")));
         System.setProperty("JWT_EXPIRATION", Objects.requireNonNull(dotenv.get("JWT_EXPIRATION")));
-        System.setProperty("JWT_REFRESH_EXPIRATION", Objects.requireNonNull(dotenv.get("JWT_REFRESH_EXPIRATION")));
 
         SpringApplication.run(BankaDigitalApplication.class, args);
     }

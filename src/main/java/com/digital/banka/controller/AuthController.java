@@ -2,7 +2,9 @@ package com.digital.banka.controller;
 
 import com.digital.banka.dto.ApiResponse;
 import com.digital.banka.dto.ApiResponseSuccess;
+import com.digital.banka.dto.auth.request.LoginRequest;
 import com.digital.banka.dto.auth.request.RegisterRequest;
+import com.digital.banka.dto.auth.response.LoginResponse;
 import com.digital.banka.dto.auth.response.RegisterResponse;
 import com.digital.banka.service.UserService;
 import jakarta.validation.Valid;
@@ -27,5 +29,13 @@ public class AuthController {
         ApiResponseSuccess<RegisterResponse> res = new ApiResponseSuccess<>(201, "User registered successfully", user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequest request) {
+        LoginResponse loginReponse = userService.login(request);
+        ApiResponseSuccess<LoginResponse> res = new ApiResponseSuccess<>(200, "User logged in successfully", loginReponse);
+
+        return ResponseEntity.ok(res);
     }
 }
