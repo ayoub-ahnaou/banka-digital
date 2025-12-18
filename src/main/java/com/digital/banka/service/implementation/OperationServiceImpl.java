@@ -1,6 +1,7 @@
 package com.digital.banka.service.implementation;
 
 import com.digital.banka.dto.operation.request.DepositRequest;
+import com.digital.banka.dto.operation.request.WithdrawRequest;
 import com.digital.banka.dto.operation.response.OperationResponse;
 import com.digital.banka.exception.ResourceNotFoundException;
 import com.digital.banka.mapper.OperationMapper;
@@ -33,14 +34,7 @@ public class OperationServiceImpl implements OperationService {
 
     @Override
     public OperationResponse deposit(DepositRequest request) {
-        String username = getCurrentUsername();
-
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        if(user.getAccount() == null)
-            throw new ResourceNotFoundException("User has no associated account");
-
-        Account account = user.getAccount();
+        Account account = getCurrentUserAccount();
 
         Operation operation = operationMapper.toEntity(request);
         operation.setType(Type.DEPOSIT);
@@ -48,21 +42,52 @@ public class OperationServiceImpl implements OperationService {
 
         applyDepositOrWithdrawalRules(operation);
 
-        account.setBalance(account.getBalance() + operation.getAmount());
-        accountRepository.save(account);
+        if (operation.getStatus() == Status.APPROVED) {
+            account.setBalance(account.getBalance() + operation.getAmount());
+            accountRepository.save(account);
+        }
 
         Operation savedOperation = operationRepository.save(operation);
         return operationMapper.toResponse(savedOperation);
     }
 
-    private String getCurrentUsername() {
+    @Override
+    public OperationResponse withdraw(WithdrawRequest request) {
+        Account account = getCurrentUserAccount();
+
+        Operation operation = operationMapper.toEntity(request);
+        operation.setType(Type.WITHDRAWAL);
+        operation.setAccountSource(account);
+
+        if (account.getBalance() < operation.getAmount()) {
+            throw new IllegalArgumentException("Insufficient balance. Available: " + account.getBalance());
+        }
+
+        applyDepositOrWithdrawalRules(operation);
+
+        if (operation.getStatus() == Status.APPROVED) {
+            account.setBalance(account.getBalance() - operation.getAmount());
+            accountRepository.save(account);
+        }
+
+        Operation savedOperation = operationRepository.save(operation);
+        return operationMapper.toResponse(savedOperation);
+    }
+
+    private Account getCurrentUserAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new SecurityException("User not authenticated");
         }
 
-        return authentication.getName();
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (user.getAccount() == null)
+            throw new ResourceNotFoundException("User has no associated account");
+
+        return user.getAccount();
     }
 
     private void applyDepositOrWithdrawalRules(Operation operation) {
