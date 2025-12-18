@@ -3,6 +3,7 @@ package com.digital.banka.service.implementation;
 import com.digital.banka.dto.operation.request.DepositRequest;
 import com.digital.banka.dto.operation.request.WithdrawRequest;
 import com.digital.banka.dto.operation.response.OperationResponse;
+import com.digital.banka.exception.InsufficientBalanceException;
 import com.digital.banka.exception.ResourceNotFoundException;
 import com.digital.banka.mapper.OperationMapper;
 import com.digital.banka.model.entity.Account;
@@ -60,7 +61,7 @@ public class OperationServiceImpl implements OperationService {
         operation.setAccountSource(account);
 
         if (account.getBalance() < operation.getAmount()) {
-            throw new IllegalArgumentException("Insufficient balance. Available: " + account.getBalance());
+            throw new InsufficientBalanceException("Insufficient balance. Available: " + account.getBalance());
         }
 
         applyDepositOrWithdrawalRules(operation);
