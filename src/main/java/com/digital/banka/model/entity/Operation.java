@@ -47,11 +47,5 @@ public class Operation {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-
-        if (amount <= 10000.0 && type != Type.TRANSFER) {
-            status = Status.APPROVED;
-            validatedAt = LocalDateTime.now();
-            executedAt = LocalDateTime.now();
-        }
     }
 }
