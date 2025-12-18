@@ -3,6 +3,7 @@ package com.digital.banka.controller;
 import com.digital.banka.dto.ApiResponse;
 import com.digital.banka.dto.ApiResponseSuccess;
 import com.digital.banka.dto.operation.request.DepositRequest;
+import com.digital.banka.dto.operation.request.WithdrawRequest;
 import com.digital.banka.dto.operation.response.OperationResponse;
 import com.digital.banka.model.enums.Status;
 import com.digital.banka.service.OperationService;
@@ -26,6 +27,20 @@ public class OperationController {
     public ResponseEntity<ApiResponse> depositForCurrentUser(@RequestBody @Valid DepositRequest request) {
 
         OperationResponse response = operationService.deposit(request);
+
+        ApiResponseSuccess<OperationResponse> apiResponse = new ApiResponseSuccess<>(
+                HttpStatus.CREATED.value(),
+                getDepositMessage(response.getStatus(), request.getAmount()),
+                response
+        );
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<ApiResponse> withdrawForCurrentUser(@RequestBody @Valid WithdrawRequest request) {
+
+        OperationResponse response = operationService.withdraw(request);
 
         ApiResponseSuccess<OperationResponse> apiResponse = new ApiResponseSuccess<>(
                 HttpStatus.CREATED.value(),
