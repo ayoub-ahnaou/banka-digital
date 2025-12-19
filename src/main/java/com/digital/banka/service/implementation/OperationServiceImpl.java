@@ -1,6 +1,7 @@
 package com.digital.banka.service.implementation;
 
 import com.digital.banka.dto.operation.request.DepositRequest;
+import com.digital.banka.dto.operation.request.TransferRequest;
 import com.digital.banka.dto.operation.request.WithdrawRequest;
 import com.digital.banka.dto.operation.response.OperationResponse;
 import com.digital.banka.exception.InsufficientBalanceException;
@@ -69,6 +70,42 @@ public class OperationServiceImpl implements OperationService {
         if (operation.getStatus() == Status.APPROVED) {
             account.setBalance(account.getBalance() - operation.getAmount());
             accountRepository.save(account);
+        }
+
+        Operation savedOperation = operationRepository.save(operation);
+        return operationMapper.toResponse(savedOperation);
+    }
+
+    @Override
+    public OperationResponse transfer(TransferRequest request) {
+        Account sourceAccount = getCurrentUserAccount();
+
+        Account destinationAccount = accountRepository.findById(request.getDestinationAccountId())
+                .orElseThrow(() -> new ResourceNotFoundException("Destination account not found"));
+
+        Operation operation = operationMapper.toEntity(request);
+        operation.setType(Type.TRANSFER);
+        operation.setAccountSource(sourceAccount);
+        operation.setAccountDestination(destinationAccount.getId());
+
+        if (sourceAccount.getBalance() < operation.getAmount()) {
+            throw new InsufficientBalanceException("Insufficient balance. Available: " + sourceAccount.getBalance());
+        }
+
+        // case amount is below automatic threshold: execute immediately
+        // else, set to pending for manual approval
+        if (operation.getAmount() <= SEUIL_AUTOMATIQUE) {
+            operation.setStatus(Status.APPROVED);
+            operation.setExecutedAt(LocalDateTime.now());
+            operation.setValidatedAt(LocalDateTime.now());
+
+            sourceAccount.setBalance(sourceAccount.getBalance() - operation.getAmount());
+            destinationAccount.setBalance(destinationAccount.getBalance() + operation.getAmount());
+
+            accountRepository.save(sourceAccount);
+            accountRepository.save(destinationAccount);
+        } else {
+            operation.setStatus(Status.PENDING);
         }
 
         Operation savedOperation = operationRepository.save(operation);
