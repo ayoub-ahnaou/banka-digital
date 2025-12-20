@@ -1,11 +1,13 @@
 package com.digital.banka.service.implementation;
 
+import com.digital.banka.dto.account.response.AccountResponse;
 import com.digital.banka.dto.auth.request.LoginRequest;
 import com.digital.banka.dto.auth.request.RegisterRequest;
 import com.digital.banka.dto.auth.response.LoginResponse;
 import com.digital.banka.dto.auth.response.RegisterResponse;
 import com.digital.banka.exception.DuplicateResourceException;
 import com.digital.banka.exception.ResourceNotFoundException;
+import com.digital.banka.mapper.AccountMapper;
 import com.digital.banka.mapper.UserMapper;
 import com.digital.banka.model.entity.Account;
 import com.digital.banka.model.entity.User;
@@ -27,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
+    private final AccountMapper accountMapper;
 
     @Override
     public RegisterResponse createUser(RegisterRequest request) {
@@ -128,5 +132,13 @@ public class UserServiceImpl implements UserService {
 
         user.setRole(Role.BANK_AGENT);
         userRepository.save(user);
+    }
+
+    @Override
+    public List<AccountResponse> getAllUsers() {
+        List<Account> users = accountRepository.findAll();
+        return users.stream()
+                .map(accountMapper::toResponse)
+                .toList();
     }
 }
