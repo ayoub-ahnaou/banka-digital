@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/documents")
@@ -38,5 +40,16 @@ public class DocumentController {
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<ApiResponse> getDocumentsByOrderId(@PathVariable("orderId") Long orderId) {
+        List<DocumentResponse> documents = documentService.getDocumentsByOrderId(orderId);
+        ApiResponseSuccess<List<DocumentResponse>> apiResponse = new ApiResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "Documents retrieved successfully",
+                documents
+        );
+        return ResponseEntity.ok(apiResponse);
     }
 }

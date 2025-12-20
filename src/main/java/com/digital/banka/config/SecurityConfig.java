@@ -40,6 +40,10 @@ public class SecurityConfig {
 
                         // get operations, only for users with ROLE_BANK_AGENT or ROLE_ADMIN
                         .requestMatchers("/api/operations").hasAnyRole("BANK_AGENT", "ADMIN")
+
+                        .requestMatchers("/api/documents/upload/**").hasRole("CLIENT")
+                        .requestMatchers("/api/documents/**").hasAnyRole("BANK_AGENT", "ADMIN")
+
                         .requestMatchers(
                                 "/api/operations/*/reject",
                                 "/api/operations/*/approve"

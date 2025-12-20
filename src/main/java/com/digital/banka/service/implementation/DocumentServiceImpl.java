@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -76,6 +77,14 @@ public class DocumentServiceImpl implements DocumentService {
 
         Document savedDocument = documentRepository.save(document);
         return documentMapper.toResponse(savedDocument);
+    }
+
+    @Override
+    public List<DocumentResponse> getDocumentsByOrderId(Long operationId) {
+        List<Document> documents = documentRepository.findByOperationId(operationId);
+        return documents.stream()
+                .map(documentMapper::toResponse)
+                .toList();
     }
 
     // validate file helper method
