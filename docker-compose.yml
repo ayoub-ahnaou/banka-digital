@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: digitalOcean_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+        - "5432:5432"
+    volumes:
+        - digitalocean_data:/var/lib/postgresql/data
+    networks:
+        - digitalocean_network
+
+  app:
+    build:
+      context: .
+    container_name: digitalOcean_app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+    depends_on:
+      - db
+    networks:
+      - digitalocean_network
+
+volumes:
+  digitalocean_data:
+
+networks:
+  digitalocean_network:
