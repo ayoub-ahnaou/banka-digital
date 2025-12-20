@@ -38,8 +38,8 @@ public class SecurityConfig {
                                 "/api/auth/**"
                         ).permitAll()
 
-                        // endpoint for consulting current user profile
-                        .requestMatchers("/api/accounts/account").authenticated()
+                        // get operations, only for users with ROLE_BANK_AGENT or ROLE_ADMIN
+                        .requestMatchers("/api/operations").hasAnyRole("BANK_AGENT", "ADMIN")
 
                         // Other endpoints - authenticated users
                         .anyRequest().authenticated()
