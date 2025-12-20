@@ -2,6 +2,7 @@ package com.digital.banka.advice;
 
 import com.digital.banka.dto.ApiResponse;
 import com.digital.banka.dto.ApiResponseError;
+import com.digital.banka.exception.IllegalOperationStatusModificationException;
 import com.digital.banka.exception.InsufficientBalanceException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -100,5 +101,15 @@ public class GlobalExceptionHandler {
                 List.of(ex.getMessage())
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(IllegalOperationStatusModificationException.class)
+    public ResponseEntity<ApiResponseError> handleIllegalOperationStatusModificationException(IllegalOperationStatusModificationException ex) {
+        ApiResponseError errorResponse = new ApiResponseError(
+                HttpStatus.BAD_REQUEST.value(),
+                "Illegal Operation Status Modification",
+                List.of(ex.getMessage())
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }
