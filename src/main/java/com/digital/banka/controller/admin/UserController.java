@@ -30,4 +30,11 @@ public class UserController {
         ApiResponseSuccess<Object> res = new ApiResponseSuccess<>(200, "User account activated successfully", null);
         return ResponseEntity.ok().body(res);
     }
+    
+    @PatchMapping("/{id}/promote")
+    public ResponseEntity<ApiResponse> promoteUserToBankAgent(@PathVariable("id") Long id) {
+        userService.promoteUserToBankAgent(id);
+        ApiResponseSuccess<Object> res = new ApiResponseSuccess<>(200, "User promoted to bank agent successfully", null);
+        return ResponseEntity.ok().body(res);
+    }
 }
