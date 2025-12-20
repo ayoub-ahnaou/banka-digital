@@ -44,6 +44,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/documents/upload/**").hasRole("CLIENT")
                         .requestMatchers("/api/documents/**").hasAnyRole("BANK_AGENT", "ADMIN")
 
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
                         .requestMatchers(
                                 "/api/operations/*/reject",
                                 "/api/operations/*/approve"
