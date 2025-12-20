@@ -90,4 +90,28 @@ public class OperationController {
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
+    @PatchMapping("/{operationId}/approve")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BANK_AGENT')")
+    public ResponseEntity<ApiResponse> approveOperation(@PathVariable Long operationId) {
+        operationService.approveOperation(operationId);
+        ApiResponseSuccess<Object> apiResponse = new ApiResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "Operation approved successfully",
+                null
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{operationId}/reject")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BANK_AGENT')")
+    public ResponseEntity<ApiResponse> rejectOperation(@PathVariable Long operationId) {
+        operationService.rejectOperation(operationId);
+        ApiResponseSuccess<Object> apiResponse = new ApiResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "Operation rejected successfully",
+                null
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 }

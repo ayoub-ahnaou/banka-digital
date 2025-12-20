@@ -4,6 +4,7 @@ import com.digital.banka.dto.operation.request.DepositRequest;
 import com.digital.banka.dto.operation.request.TransferRequest;
 import com.digital.banka.dto.operation.request.WithdrawRequest;
 import com.digital.banka.dto.operation.response.OperationResponse;
+import com.digital.banka.exception.IllegalOperationStatusModificationException;
 import com.digital.banka.exception.InsufficientBalanceException;
 import com.digital.banka.exception.ResourceNotFoundException;
 import com.digital.banka.mapper.OperationMapper;
@@ -27,7 +28,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class OperationServiceImpl implements OperationService {
-
     private static final Double SEUIL_AUTOMATIQUE = 10000.0;
 
     private final OperationRepository operationRepository;
@@ -127,6 +127,49 @@ public class OperationServiceImpl implements OperationService {
         return operations.stream()
                 .map(operationMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    public void approveOperation(Long operationId) {
+        Operation operation = operationRepository.findById(operationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Operation not found"));
+
+        if (operation.getStatus() != Status.PENDING) {
+            throw new IllegalOperationStatusModificationException("Only pending operations can be approved");
+        }
+
+        operation.setStatus(Status.APPROVED);
+        
+        if(operation.getType() == Type.DEPOSIT) {
+            Account account = operation.getAccountSource();
+            account.setBalance(account.getBalance() + operation.getAmount());
+            accountRepository.save(account);
+        } else if (operation.getType() == Type.TRANSFER) {
+            Account sourceAccount = operation.getAccountSource();
+            Account destinationAccount = accountRepository.findById(operation.getAccountDestination())
+                    .orElseThrow(() -> new ResourceNotFoundException("Destination account not found"));
+
+            sourceAccount.setBalance(sourceAccount.getBalance() - operation.getAmount());
+            destinationAccount.setBalance(destinationAccount.getBalance() + operation.getAmount());
+
+            accountRepository.save(sourceAccount);
+            accountRepository.save(destinationAccount);
+        }
+
+        operationRepository.save(operation);
+    }
+
+    @Override
+    public void rejectOperation(Long operationId) {
+        Operation operation = operationRepository.findById(operationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Operation not found"));
+
+        if (operation.getStatus() != Status.PENDING) {
+            throw new IllegalOperationStatusModificationException("Only pending operations can be rejected");
+        }
+
+        operation.setStatus(Status.REJECTED);
+        operationRepository.save(operation);
     }
 
     private Account getCurrentUserAccount() {
