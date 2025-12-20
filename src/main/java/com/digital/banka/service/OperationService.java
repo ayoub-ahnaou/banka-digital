@@ -14,4 +14,7 @@ public interface OperationService {
     OperationResponse transfer(TransferRequest request);
     List<OperationResponse> getOperationsByStatus(Status status);
     List<OperationResponse> getAllOperations();
+
+    void approveOperation(Long operationId);
+    void rejectOperation(Long operationId);
 }
