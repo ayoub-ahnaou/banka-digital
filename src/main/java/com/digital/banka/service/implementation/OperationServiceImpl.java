@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -110,6 +111,22 @@ public class OperationServiceImpl implements OperationService {
 
         Operation savedOperation = operationRepository.save(operation);
         return operationMapper.toResponse(savedOperation);
+    }
+
+    @Override
+    public List<OperationResponse> getOperationsByStatus(Status status) {
+        List<Operation> operations = operationRepository.findOperationByStatus(status);
+        return operations.stream()
+                .map(operationMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<OperationResponse> getAllOperations() {
+        List<Operation> operations = operationRepository.findAll();
+        return operations.stream()
+                .map(operationMapper::toResponse)
+                .toList();
     }
 
     private Account getCurrentUserAccount() {
