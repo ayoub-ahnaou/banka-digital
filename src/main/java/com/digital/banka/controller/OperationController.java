@@ -13,10 +13,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/operations")
@@ -73,5 +73,21 @@ public class OperationController {
             return String.format(type + " of %.2f DH requires agent approval, give use some additional document so we can approuve your operation", amount);
         }
         return type + " created";
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'BANK_AGENT')")
+    public ResponseEntity<ApiResponse> getOperationsByStatus(@RequestParam(required = false) Status status) {
+        List<OperationResponse> operations = status != null
+                ? operationService.getOperationsByStatus(status)
+                : operationService.getAllOperations();
+
+        ApiResponseSuccess<Object> apiResponse = new ApiResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "Operations retrieved successfully",
+                operations
+        );
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 }
