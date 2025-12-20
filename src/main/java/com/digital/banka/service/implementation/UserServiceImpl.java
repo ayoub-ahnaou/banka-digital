@@ -5,6 +5,7 @@ import com.digital.banka.dto.auth.request.RegisterRequest;
 import com.digital.banka.dto.auth.response.LoginResponse;
 import com.digital.banka.dto.auth.response.RegisterResponse;
 import com.digital.banka.exception.DuplicateResourceException;
+import com.digital.banka.exception.ResourceNotFoundException;
 import com.digital.banka.mapper.UserMapper;
 import com.digital.banka.model.entity.Account;
 import com.digital.banka.model.entity.User;
@@ -100,5 +101,23 @@ public class UserServiceImpl implements UserService {
                 accessToken,
                 jwtUtil.getJwtExpiration()
         );
+    }
+
+    @Override
+    public void deactivateUserAccount(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        user.setActive(false);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void activateUserAccount(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        user.setActive(true);
+        userRepository.save(user);
     }
 }

@@ -8,4 +8,6 @@ import com.digital.banka.dto.auth.response.RegisterResponse;
 public interface UserService {
     RegisterResponse createUser(RegisterRequest request);
     LoginResponse login(LoginRequest request);
+    void deactivateUserAccount(Long id);
+    void activateUserAccount(Long id);
 }
