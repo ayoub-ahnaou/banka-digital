@@ -120,4 +120,13 @@ public class UserServiceImpl implements UserService {
         user.setActive(true);
         userRepository.save(user);
     }
+
+    @Override
+    public void promoteUserToBankAgent(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        user.setRole(Role.BANK_AGENT);
+        userRepository.save(user);
+    }
 }

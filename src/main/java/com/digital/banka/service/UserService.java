@@ -10,4 +10,6 @@ public interface UserService {
     LoginResponse login(LoginRequest request);
     void deactivateUserAccount(Long id);
     void activateUserAccount(Long id);
+
+    void promoteUserToBankAgent(Long id);
 }
