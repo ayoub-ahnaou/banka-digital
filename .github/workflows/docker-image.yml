@@ -34,7 +34,7 @@ jobs:
 
     # build docker image
     - name: build docker image
-      run: docker build ${{ secrets.DOCKERHUB_USERNAME }}/banka-digital-app:${{ github.sha }} .
+      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/banka-digital-app:${{ github.sha }} .
 
     # push docker image
     - name: push docker image
