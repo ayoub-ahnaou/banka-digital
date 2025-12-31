@@ -23,7 +23,7 @@ jobs:
 
     # 
     - name: build with maven
-      run: ./mvnw clean package -DskipTests
+      run: mvn clean package -DskipTests
 
     # login to docker hub
     - name: Login to docker hub
