@@ -34,10 +34,20 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+    # set image name variable
+    - name: Set image name
+      run: echo "IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/banka-digital-app" >> $GITHUB_ENV
+
     # build docker image
     - name: build docker image
-      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/banka-digital-app:${{ github.sha }} .
+      run: |
+        docker build \
+        -t $IMAGE:${{ github.sha }} \
+        -t $IMAGE:latest \
+        .
 
     # push docker image
     - name: push docker image
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/banka-digital-app:${{ github.sha }}
+      run: |
+        docker push $IMAGE:${{ github.sha }}
+        docker push $IMAGE:latest
