@@ -51,17 +51,14 @@ jobs:
         docker push $IMAGE:latest
 
     # setup SSH
-    - name: setup SSH
-      uses: webfactory/ssh-agent@v0.9.0
+    - name: Deploy to VPS via SSH
+      uses: appleboy/ssh-action@v0.1.6
       with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    # deploy to VPS
-    - name: deploy to VPS
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVEUR_USER }}@${{ secrets.SERVER_IP }} >> 'EOF'
-          set -e
+        host: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.SERVEUR_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
           cd ${{ secrets.APP_PATH }}
           docker compose pull
           docker compose up -d
-        EOF
