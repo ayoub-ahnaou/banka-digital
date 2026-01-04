@@ -6,7 +6,8 @@ on:
 
 jobs:
 
-  build-and-push:
+  ci:
+    name: CI - build and push docker image
     runs-on: ubuntu-latest
 
     steps:
@@ -50,15 +51,26 @@ jobs:
         docker push $IMAGE:${{ github.sha }}
         docker push $IMAGE:latest
 
+  cd:
+    name: CD - deploy to VPS
+    needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+
     # setup SSH
     - name: Deploy to VPS via SSH
       uses: appleboy/ssh-action@v0.1.6
       with:
         host: ${{ secrets.SERVER_IP }}
-        username: ${{ secrets.SERVEUR_USER }}
+        username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
+          whoami
+          pwd
+          ls -la
+          docker ps
           cd ${{ secrets.APP_PATH }}
           docker compose pull
           docker compose up -d
