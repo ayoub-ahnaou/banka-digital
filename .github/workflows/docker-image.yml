@@ -59,10 +59,9 @@ jobs:
     # deploy to VPS
     - name: deploy to VPS
       run: |
-        ssh -o StrictHostKeyChecking=no \
-        ${{ secrets.SERVEUR_USER }}@${{ secrets.SERVER_IP }} >> 'EOF'
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVEUR_USER }}@${{ secrets.SERVER_IP }} >> 'EOF'
+          set -e
           cd ${{ secrets.APP_PATH }}
           docker compose pull
-          docker compose down
           docker compose up -d
         EOF
