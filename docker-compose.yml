@@ -1,51 +1,52 @@
 services:
   db:
     image: postgres:15-alpine
-    container_name: digitalOcean_db
+    container_name: banka_db
+    restart: always
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    ports:
-        - "5432:5432"
     volumes:
-        - digitalocean_data:/var/lib/postgresql/data
+        - banka_data:/var/lib/postgresql/data
     networks:
-        - digitalocean_network
+        - banka_network
 
   app:
     build:
       context: .
-    container_name: digitalOcean_app
-    ports:
-      - "8080:8080"
+    container_name: banka_app
+    restart: always
     environment:
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
+      DB_HOST: db
+      DB_PORT: 5432
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION}
+      UPLOAD_DIR: /app/uploads
     depends_on:
       - db
     networks:
-      - digitalocean_network
+      - banka_network
 
-#  keycloak:
-#    image: quay.io/keycloak/keycloak:24.0
-#    container_name: keycloak
-#    command: start-dev
-#    environment:
-#      KEYCLOAK_ADMIN: admin
-#      KEYCLOAK_ADMIN_PASSWORD: admin
-#    ports:
-#      - "8081:8080"
-#    volumes:
-#      - digitalocean_data:/opt/keycloak/data
+  nginx:
+    image: nginx:alpine
+    container_name: banka_nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - banka_network
 
 volumes:
-  digitalocean_data:
+  banka_data:
 
 networks:
-  digitalocean_network:
+  banka_network:
