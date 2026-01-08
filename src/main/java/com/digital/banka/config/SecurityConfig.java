@@ -31,39 +31,8 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
 
     @Bean
-    @Order(1)
-    public SecurityFilterChain oauth2FilterChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/api/agentOauth/**")
-                .csrf(AbstractHttpConfigurer::disable)
-
-                .authorizeHttpRequests(auth -> auth
-                        // Secure ONLY this endpoint with OAuth
-                        .requestMatchers(HttpMethod.GET, "/api/agentOauth/operations/**")
-                        .hasRole("operations.read")
-
-                        // Any other OAuth endpoint must be authenticated
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-
-                // KEYCLOAK TOKEN VALIDATION
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())
-                        )
-                );
-
-        return http.build();
-    }
-
-    @Bean
-    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
-                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers(
