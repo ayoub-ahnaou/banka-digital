@@ -114,4 +114,19 @@ public class OperationController {
         );
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
+    @GetMapping("/user")
+    @PreAuthorize("hasRole('CLIENT')")
+    public ResponseEntity<ApiResponse> getOperationsForAuthenticatedUser() {
+        System.out.println("Fetching operations for authenticated user =====================");
+        List<OperationResponse> operations = operationService.getOperationsForAuthenticatedUser();
+
+        ApiResponseSuccess<Object> apiResponse = new ApiResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "Operations for authenticated user retrieved successfully",
+                operations
+        );
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 }
