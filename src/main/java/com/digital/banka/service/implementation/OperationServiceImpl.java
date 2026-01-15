@@ -172,6 +172,13 @@ public class OperationServiceImpl implements OperationService {
         operationRepository.save(operation);
     }
 
+    @Override
+    public List<OperationResponse> getOperationsForAuthenticatedUser() {
+        Account account = getCurrentUserAccount();
+        List<Operation> operations = operationRepository.findByAccountSource(account);
+        return operations.stream().map(operationMapper::toResponse).toList();
+    }
+
     private Account getCurrentUserAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
