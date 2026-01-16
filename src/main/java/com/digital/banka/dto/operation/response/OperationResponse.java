@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class OperationResponse {
 
+    private Long id;
     private String accountSourceNumber;
     private Type type;
     private Double amount;
