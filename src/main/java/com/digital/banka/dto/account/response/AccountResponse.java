@@ -17,4 +17,5 @@ public class AccountResponse {
     private Role role;
     private String accountNumber;
     private Double balance;
+    private Boolean active;
 }

@@ -11,5 +11,6 @@ public interface AccountMapper {
     @Mapping(source = "owner.username", target = "username")
     @Mapping(source = "owner.email", target = "email")
     @Mapping(source = "owner.role", target = "role")
+    @Mapping(source = "owner.active", target = "active")
     AccountResponse toResponse(Account account);
 }
