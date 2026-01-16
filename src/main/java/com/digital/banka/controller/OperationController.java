@@ -2,6 +2,7 @@ package com.digital.banka.controller;
 
 import com.digital.banka.dto.ApiResponse;
 import com.digital.banka.dto.ApiResponseSuccess;
+import com.digital.banka.dto.document.response.DocumentResponse;
 import com.digital.banka.dto.operation.request.DepositRequest;
 import com.digital.banka.dto.operation.request.TransferRequest;
 import com.digital.banka.dto.operation.request.WithdrawRequest;
@@ -125,6 +126,20 @@ public class OperationController {
                 HttpStatus.OK.value(),
                 "Operations for authenticated user retrieved successfully",
                 operations
+        );
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/{operationId}/documents")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BANK_AGENT')")
+    public ResponseEntity<ApiResponse> getDocumentsForOperation(@PathVariable Long operationId) {
+        List<DocumentResponse> documents = operationService.getDocumentsForOperation(operationId);
+
+        ApiResponseSuccess<Object> apiResponse = new ApiResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "Documents for operation retrieved successfully",
+                documents
         );
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
