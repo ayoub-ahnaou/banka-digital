@@ -80,7 +80,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<DocumentResponse> getDocumentsByOrderId(Long operationId) {
+    public List<DocumentResponse> getDocumentsByOperationId(Long operationId) {
         List<Document> documents = documentRepository.findByOperationId(operationId);
         return documents.stream()
                 .map(documentMapper::toResponse)

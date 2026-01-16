@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface DocumentService {
     DocumentResponse uploadDocument(UploadDocumentRequest request, Long operationId);
-    List<DocumentResponse> getDocumentsByOrderId(Long operationId);
+    List<DocumentResponse> getDocumentsByOperationId(Long operationId);
 }
