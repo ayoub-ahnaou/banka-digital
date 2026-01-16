@@ -42,9 +42,9 @@ public class DocumentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
-    @GetMapping("/order/{orderId}")
-    public ResponseEntity<ApiResponse> getDocumentsByOrderId(@PathVariable("orderId") Long orderId) {
-        List<DocumentResponse> documents = documentService.getDocumentsByOrderId(orderId);
+    @GetMapping("/upload/{operationId}")
+    public ResponseEntity<ApiResponse> getDocumentsByOrderId(@PathVariable("operationId") Long operationIt) {
+        List<DocumentResponse> documents = documentService.getDocumentsByOperationId(operationIt);
         ApiResponseSuccess<List<DocumentResponse>> apiResponse = new ApiResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "Documents retrieved successfully",
