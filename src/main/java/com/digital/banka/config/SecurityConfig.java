@@ -55,7 +55,8 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/api/operations/*/reject",
-                                "/api/operations/*/approve"
+                                "/api/operations/*/approve",
+                                "/api/operations/*/documents"
                         )
                         .hasAnyRole("BANK_AGENT", "ADMIN")
 
