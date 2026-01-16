@@ -1,5 +1,6 @@
 package com.digital.banka.service;
 
+import com.digital.banka.dto.document.response.DocumentResponse;
 import com.digital.banka.dto.operation.request.DepositRequest;
 import com.digital.banka.dto.operation.request.TransferRequest;
 import com.digital.banka.dto.operation.request.WithdrawRequest;
@@ -15,6 +16,7 @@ public interface OperationService {
     List<OperationResponse> getOperationsByStatus(Status status);
     List<OperationResponse> getAllOperations();
     List<OperationResponse> getOperationsForAuthenticatedUser();
+    List<DocumentResponse> getDocumentsForOperation(Long operationId);
 
     void approveOperation(Long operationId);
     void rejectOperation(Long operationId);

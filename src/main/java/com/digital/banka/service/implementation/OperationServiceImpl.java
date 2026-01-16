@@ -1,5 +1,6 @@
 package com.digital.banka.service.implementation;
 
+import com.digital.banka.dto.document.response.DocumentResponse;
 import com.digital.banka.dto.operation.request.DepositRequest;
 import com.digital.banka.dto.operation.request.TransferRequest;
 import com.digital.banka.dto.operation.request.WithdrawRequest;
@@ -7,6 +8,7 @@ import com.digital.banka.dto.operation.response.OperationResponse;
 import com.digital.banka.exception.IllegalOperationStatusModificationException;
 import com.digital.banka.exception.InsufficientBalanceException;
 import com.digital.banka.exception.ResourceNotFoundException;
+import com.digital.banka.mapper.DocumentMapper;
 import com.digital.banka.mapper.OperationMapper;
 import com.digital.banka.model.entity.Account;
 import com.digital.banka.model.entity.Operation;
@@ -34,6 +36,7 @@ public class OperationServiceImpl implements OperationService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
     private final OperationMapper operationMapper;
+    private final DocumentMapper documentMapper;
 
     @Override
     public OperationResponse deposit(DepositRequest request) {
@@ -177,6 +180,16 @@ public class OperationServiceImpl implements OperationService {
         Account account = getCurrentUserAccount();
         List<Operation> operations = operationRepository.findByAccountSource(account);
         return operations.stream().map(operationMapper::toResponse).toList();
+    }
+
+    @Override
+    public List<DocumentResponse> getDocumentsForOperation(Long operationId) {
+        Operation operation = operationRepository.findById(operationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Operation not found"));
+
+        return operation.getDocuments().stream()
+                .map(documentMapper::toResponse)
+                .toList();
     }
 
     private Account getCurrentUserAccount() {
